@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Monster Slayer</title>
+    <script src="https://npmcdn.com/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="css/foundation.min.css">
+    <link rel="stylesheet" href="css/app.css">
+  </head>
+  <body>
+    <div id="app">
+      <section class="row">
+        <div class="small-6 columns">
+          <h1 class="text-center">YOU</h1>
+          <div class="healthbar" >
+            <div class="healthbar text-center"  v-bind:style="{ backgroundColor :'green' , width:you+'%' ,color :'white' , margin: 0}">
+              <span>{{ you }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="small-6 columns">
+          <h1 class="text-center">MONSTER</h1>
+          <div class="healthbar" >
+            <div class="healthbar text-center" v-bind:style="{ backgroundColor :'green' , width:monster+'%' ,color :'white' , margin: 0}">
+              <span >{{ monster }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="row controls" v-if='!start'>
+        <div class="small-12 columns">
+          <button id="start-game" v-on:click='startGame' >START NEW GAME</button>
+        </div>
+      </section>
+      <section class="row controls" v-if='start'>
+        <div class="small-12 columns">
+          <button id="attack" v-on:click='simpleAttack'>ATTACK</button>
+          <button id="special-attack" v-on:click='specialAttack'>SPECIAL ATTACK</button>
+          <button id="heal" v-on:click='simpleHeal'>HEAL</button>
+          <button id="give-up" v-on:click='start = !start'>GIVE UP</button>
+        </div>
+      </section>
+      <section class="row log" v-if='log'>
+        <div class="small-12 columns">
+          <ul>
+            <li  v-for="(monster,index) in logging" v-bind:class = 'index % 2 === 0 ? "monster-turn " : "player-turn"' >
+              {{ monster }} 
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <script>
+new Vue({
+  el : '#app',
+  data: {
+    name : 'apple',
+    start : false,
+    attack : false,
+    you : 100 ,
+    monster : 100 , 
+    logging : [],
+    log:false,
+  },
+  methods: {
+    simpleAttack : function(){
+      attackYou = Math.floor(Math.random()*10) + 5
+        attackMonster = Math.floor(Math.random()*10) + 2 
+        this.you = this.you -  attackYou;
+      this.monster = this.monster - attackMonster;
+      this.logging.unshift('PLAYER HITS MONSTER FOR ' + attackMonster);
+      this.logging.unshift('MONSTER HITS PLAYER FOR ' + attackYou);
+      this.log = true;
+      if(this.you <= 0 ) {
+        alert('you lost the game');
+      }
+      else if(this.monster <=0) {
+        alert('you won the game');
+      }
+
+    },
+    simpleHeal : function(){
+      healYou = Math.floor(Math.random()*10) + 5
+        attackYou = Math.floor(Math.random()*10) + 2 
+        if(this.you >= 100) {
+          // do nothing
+        }
+      else if (this.you + healYou >= 100) {
+        this.you=100;
+      } 
+      else {
+        this.you = this.you + healYou ;
+        }
+      this.you = this.you -  attackYou;
+      this.logging.unshift('PLAYER HEALS HIMSELF FOR ' + healYou);
+      this.logging.unshift('MONSTER HITS PLAYER FOR ' + attackYou);
+      this.log = true;
+      if(this.you <= 0 ) {
+        alert('you lost the game');
+      }
+      else if(this.monster <=0) {
+        alert('you won the game');
+      }
+    },
+    specialAttack : function(){
+      attackYou = Math.floor(Math.random()*10) + 2
+        attackMonster = Math.floor(Math.random()*10) + 10
+        this.you = this.you -  attackYou;
+      this.monster = this.monster - attackMonster;
+      this.logging.unshift('PLAYER HITS MONSTER FOR ' + attackMonster);
+      this.logging.unshift('MONSTER HITS PLAYER FOR ' + attackYou);
+      this.log = true;
+      if(this.you <= 0 ) {
+        alert('you lost the game');
+      }
+      else if(this.monster <=0) {
+        if (confirm('You Won The Game. Do You Want to Play Again?')) {
+            // Save it!
+      this.start = !this.start;
+      this.log = false;
+      this.you =100;
+      this.monster = 100;
+      this.logging.length = 0;
+        } else {
+      this.start = !this.start;
+        }
+      }
+
+    },
+    startGame : function () {
+      this.start = !this.start;
+      this.log = false;
+      this.you =100;
+      this.monster = 100;
+      this.logging.length = 0;
+    },
+  },
+})
+    </script>
+  </body>
+</html>
